@@ -1,1 +1,162 @@
-hello!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: #f1f5f9;
+      color: #172033;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .card {
+      width: min(100%, 420px);
+      padding: 32px;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 16px 40px rgb(15 23 42 / 8%);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+    }
+
+    .intro {
+      margin: 0 0 24px;
+      color: #526078;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    input:focus {
+      border-color: #4f46e5;
+      outline: 3px solid rgb(79 70 229 / 18%);
+    }
+
+    button {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 22px;
+      border: 0;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: white;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    button:hover {
+      background: #4338ca;
+    }
+
+    .message {
+      min-height: 24px;
+      margin: 16px 0 0;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      color: #b42318;
+    }
+
+    .message.success {
+      color: #16794b;
+    }
+
+    .demo-note {
+      margin: 20px 0 0;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #526078;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Welcome back</h1>
+    <p class="intro">Enter the demo account details to try the login form.</p>
+
+    <form id="login-form">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autocomplete="username"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit">Log in</button>
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="demo-note">
+      Demo only: this page checks credentials in your browser. Never use this
+      approach for real accounts; production logins must be checked on a
+      secure server.
+    </p>
+  </main>
+
+  <script>
+    const form = document.querySelector("#login-form");
+    const message = document.querySelector("#message");
+
+    // Demo credentials only. Browser-side credentials are visible to everyone.
+    const demoEmail = "student@example.com";
+    const demoPassword = "learn123";
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const email = form.elements.email.value.trim().toLowerCase();
+      const password = form.elements.password.value;
+      const isValidLogin = email === demoEmail && password === demoPassword;
+
+      message.className = isValidLogin ? "message success" : "message error";
+      message.textContent = isValidLogin
+        ? "Login successful! You are signed in to this demo."
+        : "Email or password is incorrect. Please try again.";
+    });
+  </script>
+</body>
+</html>
