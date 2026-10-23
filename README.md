@@ -56,6 +56,7 @@ These are demo logins for the class project only.
 - Stevin Tancio
 - Mesion Abdon
 - Jude Andrew Donaire
+- Paula Nicole Maning
 
 ## Note
 
