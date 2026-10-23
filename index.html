@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SSG Login System</title>
+    <style>
+        :root {
+            --bg: #04130b;
+            --g900: #0a2416;
+            --g800: #0f3320;
+            --g700: #17502f;
+            --y: #f5c518;
+            --y2: #ffe27a;
+            --ink: #f1f5ea;
+            --mut: #93b09c;
+            --red: #ffb4a2;
+            --ok: #7be39b;
+            --ease: cubic-bezier(.22, .8, .24, 1);
+            --glass: rgba(255, 255, 255, .045);
+            --line: rgba(245, 197, 24, .18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            overflow: hidden
+        }
+
+        button {
+            font-family: inherit
+        }
+
+        /* ---------- Background ---------- */
+        .bg {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: .55;
+            animation: drift 18s ease-in-out infinite alternate
+        }
+
+        .o1 {
+            width: 520px;
+            height: 520px;
+            background: #1c7a46;
+            top: -140px;
+            left: -120px
+        }
+
+        .o2 {
+            width: 420px;
+            height: 420px;
+            background: #b8900a;
+            bottom: -160px;
+            right: -100px;
+            opacity: .35;
+            animation-duration: 22s
+        }
+
+        .grid {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(245, 197, 24, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 197, 24, .05) 1px, transparent 1px);
+            background-size: 48px 48px;
+            -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+            mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%)
+        }
+
+        @keyframes drift {
+            to {
+                transform: translate(70px, 50px) scale(1.15)
+            }
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            transition: opacity .7s var(--ease), transform .7s var(--ease), filter .7s var(--ease), visibility .7s
+        }
+
+        .glass {
+            background: var(--glass);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px)
+        }
+
+        /* ---------- Login ---------- */
+        #login {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            align-items: center;
+            gap: 48px;
+            padding: 5vw
+        }
+
+        #login.leave {
+            opacity: 0;
+            transform: scale(1.06);
+            filter: blur(10px);
+            visibility: hidden;
+            pointer-events: none
+        }
+
+        .pitch {
+            padding-left: 2vw;
+            animation: rise 1s var(--ease) both
+        }
+
+        .emblem {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            margin-bottom: 28px
+        }
+
+        .emblem b {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--y);
+            color: var(--g900);
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 1px
+        }
+
+        .emblem::before {
+            content: "";
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 2px dashed rgba(245, 197, 24, .5);
+            animation: spin 14s linear infinite
+        }
+
+        .pitch h2 {
+            font-size: clamp(36px, 5vw, 64px);
+            line-height: 1.02;
+            font-weight: 900;
+            letter-spacing: -1px
+        }
+
+        .pitch h2 span {
+            color: var(--y)
+        }
+
+        .pitch p {
+            color: var(--mut);
+            margin-top: 16px;
+            font-size: 17px;
+            max-width: 420px;
+            line-height: 1.6
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            justify-self: center;
+            padding: 38px 34px 30px;
+            animation: rise .9s .1s var(--ease) both;
+            box-shadow: 0 40px 90px rgba(0, 0, 0, .5)
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(26px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        .card.shake {
+            animation: shake .45s
+        }
+
+        @keyframes shake {
+
+            20%,
+            60% {
+                transform: translateX(-9px)
+            }
+
+            40%,
+            80% {
+                transform: translateX(9px)
+            }
+        }
+
+        .card h1 {
+            font-size: 20px;
+            letter-spacing: 2.5px;
+            font-weight: 800
+        }
+
+        .card h1 span {
+            color: var(--y)
+        }
+
+        .sub {
+            color: var(--mut);
+            font-size: 14px;
+            margin: 8px 0 26px
+        }
+
+        .field {
+            position: relative;
+            margin-bottom: 16px
+        }
+
+        .field input {
+            width: 100%;
+            padding: 23px 50px 8px 16px;
+            background: rgba(4, 19, 11, .7);
+            border: 1.5px solid var(--g700);
+            border-radius: 12px;
+            color: var(--ink);
+            font-size: 15px;
+            outline: none;
+            transition: border-color .3s, box-shadow .3s
+        }
+
+        .field label {
+            position: absolute;
+            left: 16px;
+            top: 17px;
+            color: var(--mut);
+            font-size: 15px;
+            pointer-events: none;
+            transform-origin: left top;
+            transition: transform .3s var(--ease), color .3s
+        }
+
+        .field input:focus+label,
+        .field input:not(:placeholder-shown)+label {
+            transform: translateY(-10px) scale(.75)
+        }
+
+        .field input:focus {
+            border-color: var(--y);
+            box-shadow: 0 0 0 4px rgba(245, 197, 24, .14)
+        }
+
+        .field input:focus+label {
+            color: var(--y)
+        }
+
+        .toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: 0;
+            color: var(--mut);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: color .25s
+        }
+
+        .toggle:hover {
+            color: var(--y)
+        }
+
+        .error {
+            min-height: 20px;
+            font-size: 13px;
+            color: var(--red);
+            margin: 2px 0 12px;
+            opacity: 0;
+            transition: opacity .3s
+        }
+
+        .error.show {
+            opacity: 1
+        }
+
+        .hint {
+            text-align: center;
+            color: var(--mut);
+            font-size: 12px;
+            margin-top: 18px;
+            line-height: 1.7
+        }
+
+        .hint b {
+            color: var(--y2);
+            font-weight: 600
+        }
+
+        .guest {
+            display: block;
+            margin: 14px auto 0;
+            background: none;
+            border: 0;
+            color: var(--y);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: color .25s, transform .25s var(--ease)
+        }
+
+        .guest:hover {
+            color: var(--y2);
+            transform: translateY(-1px)
+        }
+
+        /* ---------- Buttons ---------- */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding: 15px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--y2), var(--y));
+            color: var(--g900);
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 10px 26px rgba(245, 197, 24, .28);
+            transition: transform .25s var(--ease), box-shadow .3s
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(245, 197, 24, .4)
+        }
+
+        .btn:active {
+            transform: scale(.97)
+        }
+
+        .btn.sm {
+            width: auto;
+            padding: 12px 26px;
+            font-size: 13px
+        }
+
+        .btn .label {
+            display: inline-block;
+            transition: opacity .25s, transform .35s var(--ease)
+        }
+
+        .btn .spinner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 3px solid rgba(10, 36, 22, .25);
+            border-top-color: var(--g900);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(.4);
+            transition: opacity .25s, transform .35s var(--ease)
+        }
+
+        .btn.loading {
+            pointer-events: none
+        }
+
+        .btn.loading .label {
+            opacity: 0;
+            transform: translateY(-14px)
+        }
+
+        .btn.loading .spinner {
+            opacity: 1;
+            transform: scale(1);
+            animation: spin .7s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(10, 36, 22, .25);
+            transform: scale(0);
+            animation: ripple .6s ease-out forwards;
+            pointer-events: none
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0
+            }
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--y2);
+            outline-offset: 3px
+        }
+
+        /* ---------- App shell ---------- */
+        #home {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(24px) scale(.98)
+        }
+
+        #home.enter {
+            opacity: 1;
+            visibility: visible;
+            transform: none
+        }
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 26px 16px;
+            background: rgba(4, 19, 11, .65);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-right: 1px solid var(--line)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            padding: 0 8px 26px
+        }
+
+        .brand i {
+            font-style: normal;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--y);
+            color: var(--g900);
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 900
+        }
+
+        .nb {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            border-radius: 12px;
+            background: none;
+            border: 0;
+            color: var(--mut);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: background .3s var(--ease), color .3s, transform .25s var(--ease), box-shadow .3s
+        }
+
+        .nb:hover {
+            color: var(--ink);
+            background: rgba(255, 255, 255, .05);
+            transform: translateX(3px)
+        }
+
+        .nb.on {
+            background: var(--y);
+            color: var(--g900);
+            box-shadow: 0 10px 26px rgba(245, 197, 24, .28);
+            transform: none
+        }
+
+        .ico svg {
+            display: block;
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round
+        }
+
+        .member-only {
+            display: none
+        }
+
+        body.is-admin .member-only,
+        body.is-student .member-only {
+            display: flex
+        }
+
+        .me {
+            margin-top: auto;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--glass);
+            border: 1px solid var(--line)
+        }
+
+        .me small {
+            color: var(--mut);
+            display: block;
+            font-size: 12px
+        }
+
+        .me b {
+            display: block;
+            margin: 2px 0 12px
+        }
+
+        .out {
+            width: 100%;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            background: none;
+            border: 1.5px solid var(--y);
+            color: var(--y);
+            border-radius: 10px;
+            padding: 9px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .3s, color .3s, transform .2s
+        }
+
+        .out:hover {
+            background: var(--y);
+            color: var(--g900)
+        }
+
+        .out:active {
+            transform: scale(.97)
+        }
+
+        .main {
+            overflow-y: auto;
+            padding: 34px clamp(18px, 4vw, 52px) 60px
+        }
+
+        .view {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto
+        }
+
+        .view.on {
+            display: block;
+            animation: rise .55s var(--ease) both
+        }
+
+        /* ---------- Dashboard ---------- */
+        .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px
+        }
+
+        .head h2 {
+            font-size: clamp(28px, 4.5vw, 44px);
+            line-height: 1.05;
+            font-weight: 900;
+            letter-spacing: -.5px
+        }
+
+        .head h2 em {
+            font-style: normal;
+            color: var(--y)
+        }
+
+        .head p {
+            color: var(--mut);
+            margin-top: 8px
+        }
+
+        .clock {
+            text-align: right
+        }
+
+        .clock b {
+            display: block;
+            font-size: clamp(30px, 4vw, 42px);
+            font-variant-numeric: tabular-nums;
+            color: var(--y);
+            letter-spacing: 1px
+        }
+
+        .clock span {
+            color: var(--mut);
+            font-size: 14px
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+            margin-bottom: 26px
+        }
+
+        .stat {
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform .3s var(--ease), border-color .3s
+        }
+
+        .stat:hover {
+            transform: translateY(-4px);
+            border-color: var(--y)
+        }
+
+        .stat::after {
+            content: "";
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(var(--y), transparent 70%);
+            opacity: .18
+        }
+
+        .stat b {
+            display: block;
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--y)
+        }
+
+        .stat span {
+            font-size: 13px;
+            color: var(--mut)
+        }
+
+        h3.sec {
+            font-size: 15px;
+            color: var(--y2);
+            margin: 26px 0 14px;
+            letter-spacing: .5px
+        }
+
+        .sc {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 26px;
+            flex-wrap: wrap;
+            padding: 26px 30px;
+            margin-bottom: 16px
+        }
+
+        .sc h4 {
+            font-size: 22px;
+            margin-bottom: 6px
+        }
+
+        .sc p,
+        .sc small {
+            color: var(--mut);
+            font-size: 14px;
+            line-height: 1.6;
+            display: block
+        }
+
+        .sc .right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto
+        }
+
+        .stamp {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 0;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-size: 18px;
+            line-height: 1.2;
+            color: var(--g900);
+            background: radial-gradient(circle at 30% 25%, #fff0a8, var(--y) 55%, #c99a00);
+            box-shadow: 0 0 0 8px rgba(245, 197, 24, .12), 0 20px 50px rgba(245, 197, 24, .35);
+            transition: transform .3s var(--ease), box-shadow .3s
+        }
+
+        .stamp small {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            opacity: .7;
+            margin-top: 2px
+        }
+
+        .stamp::before,
+        .stamp::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--y);
+            animation: ring 2.4s infinite;
+            pointer-events: none
+        }
+
+        .stamp::after {
+            animation-delay: 1.2s
+        }
+
+        @keyframes ring {
+            0% {
+                transform: scale(1);
+                opacity: .7
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0
+            }
+        }
+
+        .stamp:hover {
+            transform: scale(1.06)
+        }
+
+        .stamp:active {
+            transform: scale(.93)
+        }
+
+        .stamp.done {
+            cursor: default;
+            pointer-events: none;
+            background: radial-gradient(circle at 30% 25%, #c9f9d6, #4ed17a 60%, #2a9d55);
+            box-shadow: 0 0 0 8px rgba(78, 209, 122, .14), 0 20px 50px rgba(78, 209, 122, .3)
+        }
+
+        .stamp.done.late {
+            background: radial-gradient(circle at 30% 25%, #fff0a8, var(--y) 55%, #c99a00)
+        }
+
+        .stamp.wait {
+            cursor: not-allowed;
+            color: var(--mut);
+            background: var(--g800);
+            box-shadow: none;
+            font-size: 13px;
+            letter-spacing: 1px
+        }
+
+        .stamp.done::before,
+        .stamp.done::after,
+        .stamp.wait::before,
+        .stamp.wait::after {
+            display: none
+        }
+
+        .stamp svg {
+            width: 62px;
+            height: 62px;
+            fill: none;
+            stroke: var(--g900);
+            stroke-width: 3.2;
+            stroke-linecap: round;
+            stroke-linejoin: round
+        }
+
+        .stamp svg path {
+            stroke-dasharray: 30;
+            stroke-dashoffset: 30;
+            animation: draw .55s .15s var(--ease) forwards
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0
+            }
+        }
+
+        .stamp.pop {
+            animation: pop .7s var(--ease)
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(.7)
+            }
+
+            55% {
+                transform: scale(1.15)
+            }
+
+            100% {
+                transform: scale(1)
+            }
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .08);
+            overflow: hidden;
+            margin-top: 12px;
+            width: 260px;
+            max-width: 100%
+        }
+
+        .bar i {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--y), var(--y2));
+            border-radius: 99px;
+            transition: width .8s var(--ease)
+        }
+
+        /* ---------- Events & tables ---------- */
+        .panel {
+            padding: 22px;
+            margin-bottom: 20px
+        }
+
+        .panel h3 {
+            font-size: 16px;
+            margin-bottom: 14px;
+            color: var(--y2)
+        }
+
+        .fg {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px
+        }
+
+        .panel input,
+        .panel textarea,
+        .panel select {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(4, 19, 11, .7);
+            border: 1.5px solid var(--g700);
+            border-radius: 10px;
+            color: var(--ink);
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+            color-scheme: dark;
+            transition: border-color .3s, box-shadow .3s
+        }
+
+        .panel textarea {
+            resize: vertical;
+            min-height: 70px;
+            margin-bottom: 14px
+        }
+
+        .panel input:focus,
+        .panel textarea:focus,
+        .panel select:focus {
+            border-color: var(--y);
+            box-shadow: 0 0 0 4px rgba(245, 197, 24, .14)
+        }
+
+        .ev {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            padding: 18px;
+            margin-bottom: 14px;
+            transition: transform .3s var(--ease), border-color .3s
+        }
+
+        .ev:hover {
+            transform: translateY(-3px);
+            border-color: var(--y)
+        }
+
+        .ev.done {
+            opacity: .6
+        }
+
+        .date {
+            flex: none;
+            width: 62px;
+            text-align: center;
+            background: var(--y);
+            color: var(--g900);
+            border-radius: 14px;
+            padding: 8px 0
+        }
+
+        .ev.done .date {
+            background: var(--g700);
+            color: var(--ink)
+        }
+
+        .date span {
+            display: block;
+            font-size: 12px;
+            font-weight: 800
+        }
+
+        .date b {
+            font-size: 25px;
+            line-height: 1.1
+        }
+
+        .info {
+            flex: 1;
+            min-width: 0
+        }
+
+        .info h4 {
+            font-size: 17px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center
+        }
+
+        .info small {
+            color: var(--mut);
+            font-size: 13px
+        }
+
+        .info p {
+            margin-top: 8px;
+            color: #cfdccf;
+            font-size: 14px;
+            line-height: 1.5
+        }
+
+        .xtra {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            font-size: 13px;
+            color: var(--mut)
+        }
+
+        .chip {
+            font-style: normal;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            white-space: nowrap
+        }
+
+        .chip.up {
+            background: rgba(245, 197, 24, .18);
+            color: var(--y2)
+        }
+
+        .chip.now {
+            background: var(--y);
+            color: var(--g900)
+        }
+
+        .chip.done {
+            background: var(--g700);
+            color: var(--mut)
+        }
+
+        .chip.pre {
+            background: rgba(123, 227, 155, .18);
+            color: var(--ok)
+        }
+
+        .chip.late {
+            background: rgba(245, 197, 24, .2);
+            color: var(--y)
+        }
+
+        .chip.abs {
+            background: rgba(255, 180, 162, .18);
+            color: var(--red)
+        }
+
+        .del,
+        .act {
+            background: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background .25s, color .25s
+        }
+
+        .del {
+            border: 1px solid rgba(255, 180, 162, .5);
+            color: var(--red)
+        }
+
+        .del:hover {
+            background: var(--red);
+            color: var(--bg)
+        }
+
+        .act {
+            border: 1px solid var(--y);
+            color: var(--y);
+            margin-left: 6px
+        }
+
+        .act:hover {
+            background: var(--y);
+            color: var(--g900)
+        }
+
+        .admin-only,
+        .stu-only {
+            display: none
+        }
+
+        body.is-admin .admin-only,
+        body.is-student .stu-only {
+            display: block
+        }
+
+        body.is-admin button.admin-only {
+            display: inline-block
+        }
+
+        .empty {
+            color: var(--mut);
+            text-align: center;
+            padding: 30px
+        }
+
+        .tbl {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px
+        }
+
+        th,
+        td {
+            padding: 11px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--line)
+        }
+
+        th {
+            color: var(--mut);
+            font-weight: 600;
+            font-size: 13px
+        }
+
+        .r {
+            text-align: right
+        }
+
+        .sum {
+            color: var(--mut);
+            font-size: 14px;
+            margin: 12px 0
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 28px;
+            transform: translate(-50%, 30px);
+            background: var(--y);
+            color: var(--g900);
+            font-weight: 700;
+            padding: 12px 22px;
+            border-radius: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .35s, transform .35s var(--ease);
+            z-index: 20;
+            box-shadow: 0 14px 34px rgba(0, 0, 0, .4)
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0)
+        }
+
+        @media(max-width:860px) {
+            #login {
+                grid-template-columns: 1fr;
+                padding: 20px
+            }
+
+            .pitch {
+                display: none
+            }
+        }
+
+        @media(max-width:760px) {
+            #home {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto
+            }
+
+            .side {
+                order: 2;
+                flex-direction: row;
+                padding: 8px;
+                border-right: 0;
+                border-top: 1px solid var(--line);
+                justify-content: space-around
+            }
+
+            .brand,
+            .me {
+                display: none
+            }
+
+            .nb {
+                flex-direction: column;
+                gap: 4px;
+                font-size: 12px;
+                padding: 8px 14px;
+                text-align: center
+            }
+
+            .nb:hover {
+                transform: none
+            }
+
+            .clock {
+                text-align: left
+            }
+
+            .sc .right {
+                margin: 0 auto
+            }
+
+            .ev {
+                flex-wrap: wrap
+            }
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+            * {
+                animation: none !important;
+                transition-duration: .01s !important
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg"><i class="orb o1"></i><i class="orb o2"></i><i class="grid"></i></div>
+
+    <!-- LOGIN -->
+    <main id="login" class="screen">
+        <div class="pitch">
+            <div class="emblem"><b>SSG</b></div>
+            <h2>Show up.<br><span>Get stamped.</span></h2>
+            <p>The Supreme Student Government portal. See upcoming events and stamp your attendance online.</p>
+        </div>
+        <form class="card glass" id="card" novalidate>
+            <h1>SSG <span>LOGIN</span> SYSTEM</h1>
+            <p class="sub">Sign in to continue.</p>
+            <div class="field"><input id="user" type="text" placeholder=" " autocomplete="username"><label
+                    for="user">Username or Student ID</label></div>
+            <div class="field"><input id="pass" type="password" placeholder=" " autocomplete="current-password"><label
+                    for="pass">Password</label><button type="button" class="toggle" id="toggle">Show</button></div>
+            <div class="error" id="error" role="alert"></div>
+            <button class="btn" id="btn" type="submit"><span class="label">LOG IN</span><span
+                    class="spinner"></span></button>
+            <button class="guest" id="guest" type="button">Continue as guest (view only)</button>
+            <p class="hint">Admin: <b>admin</b> / <b>ssg2026</b><br>Student: <b>2024-001</b> / <b>1234</b></p>
+        </form>
+    </main>
+
+    <!-- APP -->
+    <section id="home" class="screen">
+        <aside class="side">
+            <div class="brand"><i>SSG</i> PORTAL</div>
+            <button class="nb on" data-view="dash"><span class="ico"><svg viewBox="0 0 24 24">
+                        <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
+                    </svg></span>Home</button>
+            <button class="nb" data-view="events"><span class="ico"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="5" width="18" height="16" rx="3" />
+                        <path d="M8 3v4M16 3v4M3 10h18" />
+                    </svg></span>Events</button>
+            <button class="nb member-only" data-view="att"><span class="ico"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M8 12.5l3 3 5-6" />
+                    </svg></span><span id="attLbl">Attendance</span></button>
+            <div class="me"><small id="rolePill">Student</small><b id="meName">Name</b>
+                <button class="out" id="logout"><span class="ico"><svg viewBox="0 0 24 24">
+                            <path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" />
+                        </svg></span>Log out</button>
+            </div>
+        </aside>
+
+        <div class="main">
+            <!-- HOME -->
+            <div class="view on" id="v-dash">
+                <div class="head">
+                    <div>
+                        <h2>Hello, <em id="who">Student</em>.</h2>
+                        <p id="tagline"></p>
+                    </div>
+                    <div class="clock"><b id="clock">00:00:00</b><span id="today"></span></div>
+                </div>
+                <div class="stats" id="stats"></div>
+                <h3 class="sec">Today</h3>
+                <div id="todayBox"></div>
+                <h3 class="sec">Coming up</h3>
+                <div id="soonList"></div>
+            </div>
+
+            <!-- EVENTS -->
+            <div class="view" id="v-events">
+                <div class="head">
+                    <div>
+                        <h2>Event <em>schedule</em></h2>
+                        <p>Every scheduled SSG activity.</p>
+                    </div>
+                </div>
+                <form class="panel glass admin-only" id="evForm" novalidate>
+                    <h3>Schedule an event</h3>
+                    <div class="fg">
+                        <input id="evTitle" placeholder="Event title" maxlength="80">
+                        <input id="evDate" type="date">
+                        <input id="evTime" type="time">
+                        <input id="evVenue" placeholder="Venue" maxlength="60">
+                        <input id="evFine" type="number" min="0" step="1" placeholder="Absence fine (₱, 0 = none)">
+                    </div>
+                    <textarea id="evDesc" placeholder="Details (optional)" maxlength="240"></textarea>
+                    <button class="btn sm" type="submit"><span class="label">SCHEDULE EVENT</span></button>
+                </form>
+                <div id="evList"></div>
+            </div>
+
+            <!-- ATTENDANCE -->
+            <div class="view" id="v-att">
+                <div class="head">
+                    <div>
+                        <h2 id="attTitle">Attendance</h2>
+                        <p id="attSub"></p>
+                    </div>
+                </div>
+                <div class="admin-only">
+                    <div class="panel glass">
+                        <h3>Who attended</h3>
+                        <select id="attSel"></select>
+                        <p class="sum" id="attSum"></p>
+                        <button class="btn sm" id="sancAll" type="button" style="margin-bottom:14px"><span
+                                class="label">SANCTION ALL ABSENTEES</span></button>
+                        <div class="tbl">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th class="r">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel glass">
+                        <h3>Sanctions</h3>
+                        <div class="tbl">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Event</th>
+                                        <th>Penalty</th>
+                                        <th class="r">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sancBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <form class="panel glass" id="stuForm" novalidate>
+                        <h3>Add a student</h3>
+                        <div class="fg"><input id="sId" placeholder="Student ID" maxlength="20"><input id="sName"
+                                placeholder="Full name" maxlength="60"><input id="sPass" placeholder="Password"
+                                maxlength="30"></div>
+                        <button class="btn sm" type="submit"><span class="label">ADD STUDENT</span></button>
+                    </form>
+                </div>
+                <div class="stu-only">
+                    <div class="stats" id="myStats"></div>
+                    <div class="panel glass">
+                        <h3>My sanctions</h3>
+                        <div id="mySanc"></div>
+                    </div>
+                    <div class="panel glass">
+                        <h3>My attendance history</h3>
+                        <div class="tbl">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th class="r">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myHist"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toast" id="toast"></div>
+    </section>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const form = $('card'), btn = $('btn'), err = $('error'), login = $('login'), home = $('home');
+        const ADMIN = 'admin', APASS = 'ssg2026'; // Demo only. Use server-side auth in real use.
+        let role = 'viewer', me = null;
+
+        /* ---------- Data (saved in this browser) ---------- */
+        const KEY = 'ssg_portal_v4';
+        const pad = n => String(n).padStart(2, '0');
+        const day = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+        let db = null;
+        try { db = JSON.parse(localStorage.getItem(KEY)); } catch (e) { }
+        if (!db) {
+            const n = new Date(), nowT = pad(n.getHours()) + ':' + pad(n.getMinutes());
+            db = {
+                students: [
+                    { id: '2024-001', name: 'Maria Santos', pass: '1234' }, { id: '2024-002', name: 'Juan Dela Cruz', pass: '1234' },
+                    { id: '2024-003', name: 'Ana Reyes', pass: '1234' }, { id: '2024-004', name: 'Carlo Mendoza', pass: '1234' }
+                ],
+                events: [
+                    { id: 1, title: 'General Assembly', date: day(5), time: '09:00', venue: 'School Gymnasium', desc: 'Open to all students. Attendance is required.', fine: 50 },
+                    { id: 2, title: 'Leadership Training', date: day(12), time: '13:30', venue: 'Function Hall', desc: 'Skills workshop for class officers.', fine: 0 },
+                    { id: 3, title: 'Clean-up Drive', date: day(-4), time: '07:00', venue: 'School Grounds', desc: 'Community service with all year levels.', fine: 50 },
+                    { id: 4, title: 'Student Assembly', date: day(0), time: nowT, venue: 'Covered Court', desc: 'Attendance is required for all students.', fine: 100 }
+                ],
+                att: { 3: { '2024-001': { t: Date.now() - 3e8, s: 'present' }, '2024-002': { t: Date.now() - 3e8, s: 'late' } } },
+                sanctions: []
+            };
+        }
+        const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { } };
+        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const peso = n => '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 });
+        const fmtDate = s => new Date(s + 'T00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const fmtTime = t => new Date(t).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const hm = s => new Date('1970-01-01T' + s).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const byId = id => db.students.find(s => s.id === id);
+        const evById = id => db.events.find(e => e.id == id);
+        const sorted = () => [...db.events].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+        function toast(msg) {
+            const t = $('toast'); t.textContent = msg; t.classList.add('show');
+            clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 2600);
+        }
+
+        /* ---------- Attendance rules ---------- */
+        // Check-in opens 30 min before start and stays open all event day. Late = more than 15 min after start.
+        const startOf = e => new Date(e.date + 'T' + (e.time || '00:00'));
+        const opensAt = e => fmtTime(new Date(startOf(e) - 30 * 60000));
+        function evState(e) {
+            const today = day(0);
+            if (e.date < today) return 'closed';
+            if (e.date > today) return 'soon';
+            return Date.now() < startOf(e) - 30 * 60000 ? 'soon' : 'open';
+        }
+        const isLate = e => e.time && Date.now() > startOf(e).getTime() + 15 * 60000;
+        function status(e, sid) {
+            const r = (db.att[e.id] || {})[sid];
+            return r ? { k: r.s, t: r.t } : { k: evState(e) === 'closed' ? 'absent' : 'wait' };
+        }
+        const CHIP = { present: ['pre', 'Present'], late: ['late', 'Late'], absent: ['abs', 'Absent'], wait: ['done', 'Not yet'] };
+        const sancOf = (eid, sid) => db.sanctions.find(s => s.eid == eid && s.sid === sid);
+        const penalty = s => s.amt > 0 ? peso(s.amt) + ' fine' : 'Warning / community service';
+
+        function stamp(eid) {
+            const e = evById(eid);
+            if (role !== 'student' || !e || evState(e) !== 'open') { toast('Check-in is not open for this event.'); return; }
+            db.att[eid] = db.att[eid] || {};
+            if (db.att[eid][me.id]) return;
+            const late = isLate(e);
+            db.att[eid][me.id] = { t: Date.now(), s: late ? 'late' : 'present' };
+            save(); renderAll();
+            const d = document.querySelector('.stamp.done[data-e="' + eid + '"]'); if (d) d.classList.add('pop');
+            toast(late ? 'Attendance stamped. You are marked late.' : 'Attendance stamped. You are marked present.');
+        }
+        function sanction(e, sid) {
+            if (sancOf(e.id, sid)) return false;
+            db.sanctions.push({ id: Date.now() + Math.random(), sid, eid: e.id, amt: e.fine || 0, paid: false, date: day(0) });
+            save(); return true;
+        }
+
+        /* ---------- Render: home ---------- */
+        const stat = (n, l) => `<div class="stat glass"><b>${n}</b><span>${l}</span></div>`;
+
+        function todayHTML() {
+            const today = day(0), evs = sorted().filter(e => e.date === today);
+            if (!evs.length) {
+                const nx = sorted().find(e => e.date > today);
+                return `<div class="sc glass"><div><h4>No event today</h4><p>${nx ? 'Next up: ' + esc(nx.title) + ' on ' + fmtDate(nx.date) + '.' : 'Nothing is scheduled yet.'}</p></div></div>`;
+            }
+            return evs.map(e => {
+                const state = evState(e);
+                const meta = `<small>${e.time ? hm(e.time) : 'All day'}${e.venue ? ' · ' + esc(e.venue) : ''}${e.fine > 0 ? ' · Absence fine ' + peso(e.fine) : ''}</small>`;
+                let right = '', note = '';
+                if (role === 'student') {
+                    const s = status(e, me.id);
+                    if (s.k === 'present' || s.k === 'late') {
+                        right = `<button class="stamp done ${s.k === 'late' ? 'late' : ''}" data-e="${e.id}" tabindex="-1" aria-label="Attendance stamped"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button><i class="chip ${CHIP[s.k][0]}">${CHIP[s.k][1]} · ${fmtTime(s.t)}</i>`;
+                    } else if (state === 'open') {
+                        right = `<button class="stamp" data-stamp="${e.id}" data-e="${e.id}"><span>STAMP<small>ATTENDANCE</small></span></button>`;
+                        note = isLate(e) ? '<p style="color:var(--y2)">The event already started. Stamping now marks you late.</p>' : '<p>Tap the button to record your attendance.</p>';
+                    } else {
+                        right = `<button class="stamp wait" disabled><span>Opens<br>${opensAt(e)}</span></button>`;
+                    }
+                } else if (role === 'admin') {
+                    const n = Object.keys(db.att[e.id] || {}).length, tot = db.students.length || 1;
+                    note = `<div class="bar"><i style="width:${Math.round(n / tot * 100)}%"></i></div><p>${n} of ${db.students.length} students checked in.</p>`;
+                }
+                return `<div class="sc glass"><div><h4>${esc(e.title)}</h4>${meta}${note}</div>${right ? `<div class="right">${right}</div>` : ''}</div>`;
+            }).join('');
+        }
+
+        function myCounts() {
+            const c = { present: 0, late: 0, absent: 0 };
+            db.events.filter(e => e.date <= day(0)).forEach(e => { const k = status(e, me.id).k; if (c[k] !== undefined) c[k]++; });
+            return c;
+        }
+
+        function renderDash() {
+            const today = day(0), up = sorted().filter(e => e.date >= today);
+            $('tagline').textContent = role === 'student' ? 'Stamp your attendance below when check-in opens.' : role === 'admin' ? 'Schedule events and follow attendance live.' : 'Browsing as a guest. Log in as a student to stamp attendance.';
+            if (role === 'admin') {
+                const ci = db.events.filter(e => e.date === today).reduce((a, e) => a + Object.keys(db.att[e.id] || {}).length, 0);
+                $('stats').innerHTML = stat(up.length, 'Upcoming events') + stat(db.students.length, 'Students') + stat(ci, 'Check-ins today') + stat(db.sanctions.filter(s => !s.paid).length, 'Open sanctions');
+            } else if (role === 'student') {
+                const c = myCounts();
+                $('stats').innerHTML = stat(c.present, 'Present') + stat(c.late, 'Late') + stat(c.absent, 'Absent') + stat(db.sanctions.filter(s => s.sid === me.id && !s.paid).length, 'Open sanctions');
+            } else {
+                $('stats').innerHTML = stat(up.length, 'Upcoming events') + stat(db.events.filter(e => e.date === today).length, 'Events today');
+            }
+            $('todayBox').innerHTML = todayHTML();
+            const nx = up.filter(e => e.date > today).slice(0, 3);
+            $('soonList').innerHTML = nx.length ? nx.map(e => evCard(e, true)).join('') : '<p class="empty">No upcoming events yet.</p>';
+        }
+
+        /* ---------- Render: events ---------- */
+        function evCard(e, compact) {
+            const today = day(0), st = e.date === today ? ['Today', 'now'] : e.date > today ? ['Upcoming', 'up'] : ['Done', 'done'];
+            const d = new Date(e.date + 'T00:00');
+            let x = '';
+            if (!compact && role === 'student') {
+                const s = status(e, me.id);
+                x = `<i class="chip ${CHIP[s.k][0]}">${CHIP[s.k][1]}${s.t ? ' · ' + fmtTime(s.t) : ''}</i>` + (sancOf(e.id, me.id) ? '<i class="chip abs">Sanctioned</i>' : '');
+            } else if (!compact && role === 'admin') x = `<span>${Object.keys(db.att[e.id] || {}).length} of ${db.students.length} checked in</span>`;
+            return `<article class="ev glass ${st[1]}">
+      <div class="date"><span>${d.toLocaleDateString('en-US', { month: 'short' })}</span><b>${d.getDate()}</b></div>
+      <div class="info"><h4>${esc(e.title)} <i class="chip ${st[1]}">${st[0]}</i></h4>
+        <small>${e.time ? hm(e.time) : 'All day'}${e.venue ? ' · ' + esc(e.venue) : ''}${e.fine > 0 ? ' · Absence fine ' + peso(e.fine) : ''}</small>
+        ${e.desc ? `<p>${esc(e.desc)}</p>` : ''}${x ? `<div class="xtra">${x}</div>` : ''}</div>
+      ${compact ? '' : `<button class="del admin-only" data-id="${e.id}" aria-label="Remove event">Remove</button>`}
+    </article>`;
+        }
+        const renderEvents = () => { $('evList').innerHTML = db.events.length ? sorted().map(e => evCard(e)).join('') : '<p class="empty">No events yet.</p>'; };
+
+        /* ---------- Render: attendance ---------- */
+        function renderAdminAtt() {
+            const evs = sorted().reverse();
+            const cur = $('attSel').value || (evs[0] && evs[0].id);
+            $('attSel').innerHTML = evs.map(e => `<option value="${e.id}" ${e.id == cur ? 'selected' : ''}>${esc(e.title)} · ${fmtDate(e.date)}</option>`).join('');
+            const e = evById($('attSel').value); if (!e) { $('attBody').innerHTML = ''; return; }
+            const closed = evState(e) === 'closed', c = { present: 0, late: 0, absent: 0, wait: 0 };
+            $('attBody').innerHTML = db.students.map(s => {
+                const st = status(e, s.id); c[st.k]++;
+                let a = '';
+                if (st.k !== 'present' && st.k !== 'late' && evState(e) !== 'soon') a += `<button class="act" data-mark="${s.id}">Mark present</button>`;
+                if (st.k === 'absent') a += sancOf(e.id, s.id) ? '<i class="chip abs">Sanctioned</i>' : `<button class="act" data-sanc="${s.id}">Sanction</button>`;
+                return `<tr><td>${esc(s.id)}</td><td>${esc(s.name)}</td><td><i class="chip ${CHIP[st.k][0]}">${CHIP[st.k][1]}${st.t ? ' · ' + fmtTime(st.t) : ''}</i></td><td class="r">${a}</td></tr>`;
+            }).join('') || '<tr><td colspan="4">No students yet.</td></tr>';
+            $('attSum').textContent = `${c.present} present · ${c.late} late · ${c.absent} absent · ${c.wait} waiting` + (closed ? '' : '. Absences can be sanctioned after the event day.');
+            $('sancAll').style.display = closed && c.absent ? 'inline-block' : 'none';
+            $('sancBody').innerHTML = db.sanctions.map(s => {
+                const ev = evById(s.eid), st = byId(s.sid);
+                return `<tr><td>${esc(st ? st.name : s.sid)}</td><td>${esc(ev ? ev.title : '')}</td><td>${penalty(s)}</td><td class="r">${s.paid ? '<i class="chip pre">Settled</i>' : `<button class="act" data-settle="${s.id}">Mark settled</button>`}</td></tr>`;
+            }).join('') || '<tr><td colspan="4">No sanctions issued.</td></tr>';
+        }
+        function renderStudentAtt() {
+            const evs = db.events.filter(e => e.date <= day(0)).sort((a, b) => b.date.localeCompare(a.date)), c = myCounts();
+            $('myHist').innerHTML = evs.map(e => { const st = status(e, me.id); return `<tr><td>${esc(e.title)}</td><td>${fmtDate(e.date)}</td><td class="r"><i class="chip ${CHIP[st.k][0]}">${CHIP[st.k][1]}</i></td></tr>`; }).join('') || '<tr><td colspan="3">No events yet.</td></tr>';
+            const mine = db.sanctions.filter(s => s.sid === me.id);
+            $('myStats').innerHTML = stat(c.present, 'Present') + stat(c.late, 'Late') + stat(c.absent, 'Absent') + stat(mine.filter(s => !s.paid).length, 'Open sanctions');
+            $('mySanc').innerHTML = mine.length ? mine.map(s => { const ev = evById(s.eid); return `<p class="sum">${esc(ev ? ev.title : '')}: ${penalty(s)} · ${s.paid ? 'Settled' : 'Unsettled. Please see an SSG officer.'}</p>`; }).join('') : '<p class="sum">You have no sanctions.</p>';
+        }
+        function renderAll() {
+            renderDash(); renderEvents();
+            if (role === 'admin') renderAdminAtt();
+            if (role === 'student') renderStudentAtt();
+        }
+
+        /* ---------- Navigation & clock ---------- */
+        function show(v) {
+            document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.view === v));
+            document.querySelectorAll('.view').forEach(x => x.classList.toggle('on', x.id === 'v-' + v));
+            document.querySelector('.main').scrollTop = 0;
+        }
+        document.querySelector('.side').addEventListener('click', e => { const b = e.target.closest('.nb'); if (b) show(b.dataset.view); });
+        function tick() {
+            const n = new Date();
+            $('clock').textContent = n.toLocaleTimeString('en-US', { hour12: false });
+            $('today').textContent = n.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        }
+        setInterval(tick, 1000); tick();
+        setInterval(() => { if (home.classList.contains('enter')) renderDash(); }, 30000);
+
+        /* ---------- Actions ---------- */
+        $('todayBox').addEventListener('click', e => { const b = e.target.closest('[data-stamp]'); if (b) stamp(b.dataset.stamp); });
+
+        $('evList').addEventListener('click', e => {
+            const b = e.target.closest('.del'); if (!b || role !== 'admin') return;
+            const ev = evById(b.dataset.id); if (!ev) return;
+            db.events = db.events.filter(x => x.id != ev.id);
+            delete db.att[ev.id]; db.sanctions = db.sanctions.filter(s => s.eid != ev.id);
+            save(); renderAll(); toast('Event removed.');
+        });
+
+        $('evForm').addEventListener('submit', e => {
+            e.preventDefault(); if (role !== 'admin') return;
+            const title = $('evTitle').value.trim(), date = $('evDate').value;
+            if (!title || !date) { toast('Add a title and a date.'); return; }
+            db.events.push({ id: Date.now(), title, date, time: $('evTime').value, venue: $('evVenue').value.trim(), desc: $('evDesc').value.trim(), fine: Math.max(0, parseFloat($('evFine').value) || 0) });
+            save(); e.target.reset(); renderAll(); toast('Event scheduled.');
+        });
+
+        $('attSel').addEventListener('change', renderAdminAtt);
+
+        $('attBody').addEventListener('click', e => {
+            const ev = evById($('attSel').value); if (!ev || role !== 'admin') return;
+            const m = e.target.closest('[data-mark]'), s = e.target.closest('[data-sanc]');
+            if (m) { db.att[ev.id] = db.att[ev.id] || {}; db.att[ev.id][m.dataset.mark] = { t: Date.now(), s: 'present' }; save(); renderAll(); toast('Marked present.'); }
+            if (s && sanction(ev, s.dataset.sanc)) { renderAll(); toast('Sanction issued.'); }
+        });
+
+        $('sancAll').addEventListener('click', () => {
+            const ev = evById($('attSel').value); if (!ev || role !== 'admin') return;
+            let n = 0; db.students.forEach(s => { if (status(ev, s.id).k === 'absent' && sanction(ev, s.id)) n++; });
+            renderAll(); toast(n ? `${n} sanction${n > 1 ? 's' : ''} issued.` : 'No new absentees to sanction.');
+        });
+
+        $('sancBody').addEventListener('click', e => {
+            const b = e.target.closest('[data-settle]'); if (!b || role !== 'admin') return;
+            const s = db.sanctions.find(x => String(x.id) === b.dataset.settle); if (!s) return;
+            s.paid = true; save(); renderAll(); toast('Sanction settled.');
+        });
+
+        $('stuForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const id = $('sId').value.trim(), name = $('sName').value.trim(), pass = $('sPass').value;
+            if (!id || !name || !pass) { toast('Fill in ID, name and password.'); return; }
+            if (byId(id)) { toast('That student ID already exists.'); return; }
+            db.students.push({ id, name, pass }); save(); e.target.reset(); renderAll(); toast('Student added.');
+        });
+
+        /* ---------- Login ---------- */
+        $('toggle').addEventListener('click', () => {
+            const s = $('pass').type === 'password';
+            $('pass').type = s ? 'text' : 'password'; $('toggle').textContent = s ? 'Hide' : 'Show';
+        });
+        btn.addEventListener('click', e => {
+            const r = document.createElement('span'), b = btn.getBoundingClientRect(), s = Math.max(b.width, b.height);
+            r.className = 'ripple';
+            r.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - b.left - s / 2}px;top:${e.clientY - b.top - s / 2}px`;
+            btn.appendChild(r); setTimeout(() => r.remove(), 600);
+        });
+        function fail(msg) {
+            err.textContent = msg; err.classList.add('show');
+            form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake');
+        }
+        function enter(r, name, stu) {
+            role = r; me = stu || null;
+            document.body.classList.toggle('is-admin', r === 'admin');
+            document.body.classList.toggle('is-student', r === 'student');
+            $('who').textContent = name; $('meName').textContent = stu ? stu.name : name;
+            $('rolePill').textContent = r === 'admin' ? 'Administrator' : r === 'student' ? 'Student · ' + stu.id : 'Guest';
+            $('attLbl').textContent = r === 'admin' ? 'Attendance' : 'My attendance';
+            $('attTitle').innerHTML = r === 'admin' ? 'Attendance & <em>sanctions</em>' : 'My <em>attendance</em>';
+            $('attSub').textContent = r === 'admin' ? 'See who stamped in and sanction absences.' : 'Your record and any sanctions.';
+            show('dash'); renderAll();
+            login.classList.add('leave');
+            setTimeout(() => home.classList.add('enter'), 250);
+        }
+        form.addEventListener('submit', e => {
+            e.preventDefault(); err.classList.remove('show');
+            const u = $('user').value.trim(), p = $('pass').value;
+            if (!u || !p) { fail('Enter your username or student ID and password.'); return; }
+            btn.classList.add('loading');
+            setTimeout(() => {
+                const stu = db.students.find(s => s.id === u && s.pass === p);
+                if (u === ADMIN && p === APASS) enter('admin', 'Admin');
+                else if (stu) enter('student', stu.name.split(' ')[0], stu);
+                else { btn.classList.remove('loading'); fail('Incorrect ID or password. Try again.'); }
+            }, 1100);
+        });
+        $('guest').addEventListener('click', () => enter('viewer', 'Guest'));
+        $('logout').addEventListener('click', () => {
+            home.classList.remove('enter');
+            setTimeout(() => {
+                login.classList.remove('leave'); btn.classList.remove('loading'); form.reset();
+                document.body.classList.remove('is-admin', 'is-student'); role = 'viewer'; me = null;
+            }, 300);
+        });
+    </script>
+</body>
+
+</html>
